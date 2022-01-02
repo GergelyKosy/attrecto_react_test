@@ -45,6 +45,8 @@ const Home:FC = () => {
     const searchParam = "&query=" + value + "&page=" + page;
     const query = url + searchParam;
 
+    setPageCounter(page);
+
     const response = await fetch(query);
     const data = response.json();
     const results = data.then(response => {
@@ -61,7 +63,7 @@ const Home:FC = () => {
 
   const handleSearch = (value: string) => {
     setSearchedMovie(value);
-    
+    setPageCounter(1);
     if (value.length < 3) {
       return;
     } else if (value.length === 0) {
@@ -125,14 +127,21 @@ const Home:FC = () => {
   }
 
   const fetchMoreMovies = (movies: string, forward: boolean) => {
+    console.log(pageCounter);
+    console.log(moviesPageCount);
+    console.log(latestMoviesPageCount);
+    console.log(movies);
+    console.log(forward);
     if (movies === "latestMovies") {
-      console.log(latestMovies?.length);
       if (forward) latestMoviesFetch(pageCounter + 1);
       else {
         latestMoviesFetch(pageCounter - 1);
       }
     } else {
-
+      if (forward) movieFetch(pageCounter + 1, searchedMovie);
+      else {
+        movieFetch(pageCounter - 1, searchedMovie);
+      }
     }
   }
 
