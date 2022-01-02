@@ -1,4 +1,5 @@
 import {FC, useEffect, useState } from "react";
+import MovieModal from "../containers/MovieModal";
 
 const Home:FC = () => {
   const [searchedMovie, setSearchedMovie] = useState<string>("");
@@ -59,15 +60,18 @@ const Home:FC = () => {
 
   const handleSearchResults = () => {
     console.log(searchResults);
-    return searchResults && searchResults.map((result: any, index) => {
-      
-      return <div key={index}>
-        <img src={result.poster_path} alt="" />
-        <div>{result.title}</div>
-        <div>{result.release_date}</div>
-        <div style={{ display: "flex", justifyContent: "center" }}>{renderGenre(result)}</div>
-      </div>
-    })
+    if (!searchResults || searchResults.length === 0) {
+      return <div>Nincs találat</div>;
+    } return searchResults.map((result: any, index) => {
+      return <MovieModal 
+        title={result.title}
+        description={result.overview}
+        genre={renderGenre(result)}
+        releaseDate={result.release_date}
+        id={result.id}
+        imageUrl={result.poster_path} 
+      />
+    });
   }
 
   return <div>
@@ -78,7 +82,7 @@ const Home:FC = () => {
     </div>
     <div>
       <p>Results</p>
-      <div>
+      <div style={{ display: "flex" }}>
         {handleSearchResults()}
       </div>
     </div>
