@@ -2,6 +2,7 @@ import {FC, useEffect, useState } from "react";
 import { genreFetch, latestMoviesFetch, movieFetch } from "../../api";
 import MovieModal from "../../containers/Modal/MovieModal/MovieModal";
 import "./Home.css";
+import { BsArrowLeftCircle, BsArrowRightCircle } from "react-icons/bs";
 
 const Home:FC = () => {
   const [searchedMovie, setSearchedMovie] = useState<string>("");
@@ -37,7 +38,6 @@ const Home:FC = () => {
     }).catch(error => console.log(error));
   }
 
-  //TODO: pages should be included or load on scrolling
   useEffect(() => {
     handleGenreFetch();
     handleLatestMoviesFetch(1);
@@ -127,20 +127,36 @@ const Home:FC = () => {
     if (type === "latestMovies") {
       return <>
         <button 
+          className={pageCounter === 1 ? 
+            "navigation_button_disabled" : "navigation_button"}
           disabled={pageCounter === 1}
-          onClick={() => fetchMoreMovies("latestMovies", false)}>Back</button>
+          onClick={() => fetchMoreMovies("latestMovies", false)}>
+            <BsArrowLeftCircle size={40} />
+          </button>
         <button 
+          className={latestMoviesPageCount === pageCounter ? 
+            "navigation_button_disabled" : "navigation_button"}
           disabled={latestMoviesPageCount === pageCounter}
-          onClick={() => fetchMoreMovies("latestMovies", true)}>Forward</button>
+          onClick={() => fetchMoreMovies("latestMovies", true)}>
+            <BsArrowRightCircle size={40} />
+          </button>
       </>
     } 
     return <>
-      <button 
+      <button
+        className={pageCounter === 1 ? 
+          "navigation_button_disabled" : "navigation_button"}
         disabled={pageCounter === 1}
-        onClick={() => fetchMoreMovies("searchedMovies", false)}>Back</button>
+        onClick={() => fetchMoreMovies("searchedMovies", false)}>
+          <BsArrowLeftCircle size={40} />
+        </button>
       <button 
+        className={moviesPageCount === pageCounter ? 
+          "navigation_button_disabled" : "navigation_button"}
         disabled={moviesPageCount === pageCounter}
-        onClick={() => fetchMoreMovies("searchedMovies", true)}>Forward</button>
+        onClick={() => fetchMoreMovies("searchedMovies", true)}>
+          <BsArrowRightCircle size={40} />
+          </button>
     </>
   }
 
@@ -148,12 +164,17 @@ const Home:FC = () => {
     <div>
       <p>Search:</p>
       <input 
+        placeholder="Search for a movie..."
+        className="Home-search_field"
         onBlur={(e) => handleSearch(e.target.value)}
         onChange={(e) => handleSearch(e.target.value)} 
         type="search" value={searchedMovie} />
     </div>
     <div>
-      <p>Results</p>
+      <div className="navigation_button_container">
+        {searchedMovie.length >= 3 ? renderNavigationButtons("searchedMovies") :
+          renderNavigationButtons("latestMovies")}
+      </div>
       <div className="Results_container">
         {searchedMovie.length >= 3 ? (
           handleSearchResults()
@@ -161,8 +182,10 @@ const Home:FC = () => {
           renderLatestMovies()
         )}
       </div>
-      {searchedMovie.length >= 3 ? renderNavigationButtons("searchedMovies") :
-        renderNavigationButtons("latestMovies")}
+      <div className="navigation_button_container">
+        {searchedMovie.length >= 3 ? renderNavigationButtons("searchedMovies") :
+          renderNavigationButtons("latestMovies")}
+      </div>
     </div>
   </div>;
 }

@@ -63,8 +63,8 @@ const ModalContent:FC<IMovieModal> = ({
     <div>
       <table className="Details_table-container">
         <tbody>
-          {movieDetail.map(detail => (
-            <tr>
+          {movieDetail.map((detail, index) => (
+            <tr key={index}>
               <td className="Details_table-left_side">{detail.leftSide}</td>
               <td className="Details_table-right_side">{detail.rightSide}</td>
             </tr>
