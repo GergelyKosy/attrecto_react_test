@@ -62,6 +62,7 @@ const Home:FC = () => {
 
   const renderGenre = (result: any) => {
     const filteredGenres:any = [];
+    let finalGenres = "";
     genres?.filter((genre: any) => {
       result.genre_ids.map((id: number) => {
         if (genre.id === id) {
@@ -70,10 +71,16 @@ const Home:FC = () => {
       })
     });
     
-    return filteredGenres.map((genre: any, index: number) => {
-      if (index === 0) return <p key={index}>{genre}</p>;
-      return <p key={index}>{", " + genre}</p>;
+    // eslint-disable-next-line array-callback-return
+    filteredGenres.map((genre: any, index: number) => {
+      if (index === 0) {
+        finalGenres = genre;
+      } else {
+        finalGenres += ", " + genre;
+      }
     });
+
+    return finalGenres;
   }
 
   const handleSearchResults = () => {
@@ -104,7 +111,7 @@ const Home:FC = () => {
     });
   }
 
-  return <div>
+  return <div style={{ paddingBottom: "50px" }}>
     Home
     <div>
       <p>Search:</p>

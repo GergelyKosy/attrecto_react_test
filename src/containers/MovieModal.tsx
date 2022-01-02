@@ -9,6 +9,12 @@ const customStyles = {
     bottom: 'auto',
     marginRight: '-50%',
     transform: 'translate(-50%, -50%)',
+    display: "flex",
+    backgroundColor: "black",
+    height: "450px",
+    padding: "unset",
+    width: "50%",
+    maxWidth: "1440px"
   },
 };
 
@@ -60,15 +66,39 @@ const MovieModal:FC<IMovieModal> = ({
 
   return (
     <div>
-      <div style={{ border: "1px solid grey", width: "250px" }} onClick={openModal}>
+      <div 
+        style={{ 
+          width: "250px", 
+          margin: "10px",
+          height: "400px",
+          position: "relative"
+        }} 
+        onClick={openModal}>
           <img 
-            width="200px"
+            style={{
+              width: "inherit"
+            }}
             height="auto"
             src={imageUrl && "https://image.tmdb.org/t/p/w300_and_h450_bestv2"+imageUrl} 
             alt="" />
-          <div>{title}</div>
-          <div>{releaseDate}</div>
-          <div style={{ display: "flex", justifyContent: "center" }}>{genre}</div>
+          <div style={{
+            borderTop: "unset",
+            position: "absolute",
+            bottom: 0,
+            width: "100%",
+            backgroundColor: "grey"
+          }}>
+            <div>{title}</div>
+            <div>{releaseDate}</div>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <p style={{
+                margin: "auto",
+                textOverflow: "ellipsis",
+                overflow: "hidden",
+                whiteSpace: "nowrap"
+              }}>{genre}</p>
+            </div>  
+          </div>
       </div>
       <Modal
         isOpen={modalIsOpen}
@@ -80,15 +110,17 @@ const MovieModal:FC<IMovieModal> = ({
           <img src={imageUrl && "https://image.tmdb.org/t/p/w300_and_h450_bestv2"+imageUrl} alt=""/>
         </div>
         <div>
-          <p>{title}</p>
-          <p>{description}</p>
-          <div>{genre}</div>
-          <p>{releaseDate}</p>
-          <p>{}</p>
-          <p>{}</p> 
-          <p>{}</p> 
+          <div>
+            <p>{description}</p>
+            <p>{title}</p>
+            <div>{genre}</div>
+            <p>{releaseDate}</p>
+            <p>{}</p>
+            <p>{}</p> 
+            <p>{}</p> 
+          </div>
+          <button onClick={closeModal}>x</button>
         </div>
-        <button onClick={closeModal}>x</button>
       </Modal>
     </div>
   );
