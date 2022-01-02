@@ -9,7 +9,6 @@ const Home:FC = () => {
   const apiKey = "1c5abaaeaa13c66b570ad3042a0d51f4";
 
   //TODO: pages should be included or load on scrolling
-  //TODO: CHECK series also
   useEffect(() => {
     async function genreFetch() {
       const url = "https://api.themoviedb.org/3/genre/movie/list?api_key=" + apiKey;
@@ -111,8 +110,7 @@ const Home:FC = () => {
     });
   }
 
-  return <div style={{ paddingBottom: "50px" }}>
-    Home
+  return <div style={{ paddingBottom: "100px" }}>
     <div>
       <p>Search:</p>
       <input 

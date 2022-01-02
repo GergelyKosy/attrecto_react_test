@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import Modal from 'react-modal';
+import ModalContent from './Modal/ModalContent';
 
 const customStyles = {
   content: {
@@ -13,8 +14,9 @@ const customStyles = {
     backgroundColor: "black",
     height: "450px",
     padding: "unset",
-    width: "50%",
-    maxWidth: "1440px"
+    width: "800px",
+    fontFamily: "roboto",
+    fontWeight: "500"
   },
 };
 
@@ -25,6 +27,12 @@ interface IMovieModal {
   releaseDate: string,
   id: number,
   imageUrl: string 
+}
+
+interface IDetail {
+  imdb_id: string,
+  runtime: number,
+  production_countries: []
 }
 
 const apiKey = "1c5abaaeaa13c66b570ad3042a0d51f4";
@@ -38,7 +46,7 @@ const MovieModal:FC<IMovieModal> = ({
   imageUrl 
 }) => {
   const [modalIsOpen, setIsOpen] = useState(false);
-  const [detail, setDetail] = useState();
+  const [detail, setDetail] = useState<IDetail>();
 
   useEffect(() => {
     async function detailFetch() {
@@ -68,11 +76,12 @@ const MovieModal:FC<IMovieModal> = ({
     <div>
       <div 
         style={{ 
-          width: "250px", 
+          width: "250px",
           margin: "10px",
           height: "400px",
-          position: "relative"
-        }} 
+          position: "relative",
+          cursor: "pointer"
+        }}
         onClick={openModal}>
           <img 
             style={{
@@ -86,7 +95,7 @@ const MovieModal:FC<IMovieModal> = ({
             position: "absolute",
             bottom: 0,
             width: "100%",
-            backgroundColor: "grey"
+            backgroundColor: "black"
           }}>
             <div>{title}</div>
             <div>{releaseDate}</div>
@@ -109,16 +118,16 @@ const MovieModal:FC<IMovieModal> = ({
         <div>
           <img src={imageUrl && "https://image.tmdb.org/t/p/w300_and_h450_bestv2"+imageUrl} alt=""/>
         </div>
-        <div>
-          <div>
-            <p>{description}</p>
-            <p>{title}</p>
-            <div>{genre}</div>
-            <p>{releaseDate}</p>
-            <p>{}</p>
-            <p>{}</p> 
-            <p>{}</p> 
-          </div>
+        <div style={{ overflowY: "auto", padding: "25px" }}>
+          <ModalContent
+            title={title}
+            description={description}
+            genre={genre}
+            releaseDate={releaseDate}
+            imdb_id={detail?.imdb_id}
+            runtime={detail?.runtime}
+            country={detail?.production_countries}
+          />
           <button onClick={closeModal}>x</button>
         </div>
       </Modal>
