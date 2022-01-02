@@ -1,37 +1,62 @@
 import {FC, useEffect, useState } from "react";
 import MovieModal from "../containers/MovieModal";
 
+
+
 const Home:FC = () => {
   const [searchedMovie, setSearchedMovie] = useState<string>("");
   const [genres, setGenres] = useState<[]>();
+
   const [latestMovies, setLatestMovies] = useState<[]>();
+  const [moviesPageCount, setMoviesPageCount] = useState<number>(0);
+  const [latestMoviesPageCount, setLatestMoviesPageCount] = useState<number>(0);
+  const [pageCounter, setPageCounter] = useState<number>(1);
+
   const [searchResults, setSearchResults] = useState<[]>();
   const apiKey = "1c5abaaeaa13c66b570ad3042a0d51f4";
 
+  // FETCH
+  async function latestMoviesFetch(page: number) {
+    const url = "https://api.themoviedb.org/3/movie/top_rated?api_key=" + apiKey;
+    const searchParam = url + "&page=" + page;
+
+    setPageCounter(page);
+
+    const response = await fetch(searchParam);
+    const data = response.json();
+    const results = data.then(response => {
+      setLatestMoviesPageCount(response.total_pages);
+      setLatestMovies(response.results);
+    }).catch(error => console.log(error));
+  }
+
+  async function genreFetch() {
+    const url = "https://api.themoviedb.org/3/genre/movie/list?api_key=" + apiKey;
+
+    const response = await fetch(url);
+    const data = response.json();
+    const results = data.then(response => {
+      setGenres(response.genres);
+    }).catch(error => console.log(error));
+  }
+
+  async function movieFetch(page: number, value: string) {
+    const url = "https://api.themoviedb.org/3/search/movie?api_key=" + apiKey;
+    const searchParam = "&query=" + value + "&page=" + page;
+    const query = url + searchParam;
+
+    const response = await fetch(query);
+    const data = response.json();
+    const results = data.then(response => {
+      setMoviesPageCount(response.total_pages);
+      setSearchResults(response.results);
+    }).catch(error => console.log(error));
+  }
+
   //TODO: pages should be included or load on scrolling
   useEffect(() => {
-    async function genreFetch() {
-      const url = "https://api.themoviedb.org/3/genre/movie/list?api_key=" + apiKey;
-
-      const response = await fetch(url);
-      const data = response.json();
-      const results = data.then(response => {
-        setGenres(response.genres);
-      }).catch(error => console.log(error));
-    }
     genreFetch();
-
-    async function latestMoviesFetch() {
-      const url = "https://api.themoviedb.org/3/movie/top_rated?api_key=" + apiKey;
-
-      const response = await fetch(url);
-      const data = response.json();
-      const results = data.then(response => {
-        setLatestMovies(response.results);
-      }).catch(error => console.log(error));
-    }
-    latestMoviesFetch();
-
+    latestMoviesFetch(1);
   },[]);
 
   const handleSearch = (value: string) => {
@@ -43,20 +68,7 @@ const Home:FC = () => {
       setSearchResults([]);
     }
 
-    async function movieFetch() {
-      const url = "https://api.themoviedb.org/3/search/movie?api_key=" + apiKey;
-      const searchParam = "&query=" + value;
-      const query = url + searchParam;
-
-      const response = await fetch(query);
-      const data = response.json();
-      const results = data.then(response => {
-        console.log("searched",response.results);
-        setSearchResults(response.results);
-      }).catch(error => console.log(error));
-    }
-
-    movieFetch();
+    movieFetch(pageCounter, value);
   }
 
   const renderGenre = (result: any) => {
@@ -112,8 +124,37 @@ const Home:FC = () => {
     });
   }
 
-  const fetchMoreMovies = () => {
+  const fetchMoreMovies = (movies: string, forward: boolean) => {
+    if (movies === "latestMovies") {
+      console.log(latestMovies?.length);
+      if (forward) latestMoviesFetch(pageCounter + 1);
+      else {
+        latestMoviesFetch(pageCounter - 1);
+      }
+    } else {
 
+    }
+  }
+
+  const renderNavigationButtons = (type: string) => {
+    if (type === "latestMovies") {
+      return <>
+        <button 
+          disabled={pageCounter === 1}
+          onClick={() => fetchMoreMovies("latestMovies", false)}>Back</button>
+        <button 
+          disabled={latestMoviesPageCount === pageCounter}
+          onClick={() => fetchMoreMovies("latestMovies", true)}>Forward</button>
+      </>
+    } 
+    return <>
+      <button 
+        disabled={pageCounter === 1}
+        onClick={() => fetchMoreMovies("searchedMovies", false)}>Back</button>
+      <button 
+        disabled={moviesPageCount === pageCounter}
+        onClick={() => fetchMoreMovies("searchedMovies", true)}>Forward</button>
+    </>
   }
 
   return <div style={{ paddingBottom: "100px" }}>
@@ -133,6 +174,8 @@ const Home:FC = () => {
           renderLatestMovies()
         )}
       </div>
+      {searchedMovie.length >= 3 ? renderNavigationButtons("searchedMovies") :
+        renderNavigationButtons("latestMovies")}
     </div>
   </div>;
 }
