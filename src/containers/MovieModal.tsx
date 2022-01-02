@@ -1,6 +1,8 @@
 import React, { FC, useEffect, useState } from 'react';
 import Modal from 'react-modal';
 import ModalContent from './Modal/ModalContent';
+import { BsXSquareFill } from "react-icons/bs";
+
 
 const customStyles = {
   content: {
@@ -14,9 +16,11 @@ const customStyles = {
     backgroundColor: "black",
     height: "450px",
     padding: "unset",
-    width: "800px",
+    maxWidth: "800px",
     fontFamily: "roboto",
-    fontWeight: "500"
+    fontWeight: "500",
+    borderTopLeftRadius: "15px",
+    borderBottomLeftRadius: "15px"
   },
 };
 
@@ -26,7 +30,8 @@ interface IMovieModal {
   genre: string,
   releaseDate: string,
   id: number,
-  imageUrl: string 
+  imageUrl: string,
+  index: number
 }
 
 interface IDetail {
@@ -43,7 +48,8 @@ const MovieModal:FC<IMovieModal> = ({
   genre,
   releaseDate,
   id,
-  imageUrl 
+  imageUrl,
+  index
 }) => {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [detail, setDetail] = useState<IDetail>();
@@ -70,10 +76,8 @@ const MovieModal:FC<IMovieModal> = ({
     setIsOpen(false);
   }
 
-
-
   return (
-    <div>
+    <div key={index}>
       <div 
         style={{ 
           width: "250px",
@@ -85,7 +89,9 @@ const MovieModal:FC<IMovieModal> = ({
         onClick={openModal}>
           <img 
             style={{
-              width: "inherit"
+              width: "inherit",
+              borderTopLeftRadius: "10px",
+              borderTopRightRadius: "10px"
             }}
             height="auto"
             src={imageUrl && "https://image.tmdb.org/t/p/w300_and_h450_bestv2"+imageUrl} 
@@ -118,7 +124,7 @@ const MovieModal:FC<IMovieModal> = ({
         <div>
           <img src={imageUrl && "https://image.tmdb.org/t/p/w300_and_h450_bestv2"+imageUrl} alt=""/>
         </div>
-        <div style={{ overflowY: "auto", padding: "25px" }}>
+        <div style={{ overflowY: "auto", padding: "25px", display: "flex" }}>
           <ModalContent
             title={title}
             description={description}
@@ -126,9 +132,19 @@ const MovieModal:FC<IMovieModal> = ({
             releaseDate={releaseDate}
             imdb_id={detail?.imdb_id}
             runtime={detail?.runtime}
-            country={detail?.production_countries}
+            countries={detail?.production_countries}
           />
-          <button onClick={closeModal}>x</button>
+          <div style={{
+            fontSize: "24px",
+            fontWeight: "700",
+            cursor: "pointer",
+            position: "absolute",
+            top: 0,
+            right: 0,
+            margin: "20px"
+          }} onClick={closeModal}>
+            <BsXSquareFill />
+          </div>
         </div>
       </Modal>
     </div>

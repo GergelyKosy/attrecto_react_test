@@ -8,7 +8,7 @@ const Header:FC = () => {
       textTransform: "uppercase", 
       fontFamily: "sans-serif" 
     }}>
-    Your cinema
+    Your cinema guide
   </div>;
 }
 

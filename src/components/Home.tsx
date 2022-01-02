@@ -87,6 +87,7 @@ const Home:FC = () => {
       return <div>Nincs találat</div>;
     } return searchResults.map((result: any, index) => {
       return <MovieModal 
+        index={index}
         title={result.title}
         description={result.overview}
         genre={renderGenre(result)}
@@ -100,6 +101,7 @@ const Home:FC = () => {
   const renderLatestMovies = () => {
     return latestMovies?.map((result: any, index) => {
       return <MovieModal 
+        index={index}
         title={result.title}
         description={result.overview}
         genre={renderGenre(result)}
@@ -108,6 +110,10 @@ const Home:FC = () => {
         imageUrl={result.poster_path} 
       />
     });
+  }
+
+  const fetchMoreMovies = () => {
+
   }
 
   return <div style={{ paddingBottom: "100px" }}>
@@ -121,9 +127,11 @@ const Home:FC = () => {
     <div>
       <p>Results</p>
       <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}>
-        {searchedMovie.length >= 3 ? 
-        handleSearchResults() : 
-        renderLatestMovies()}
+        {searchedMovie.length >= 3 ? (
+          handleSearchResults()
+        ) : (
+          renderLatestMovies()
+        )}
       </div>
     </div>
   </div>;
