@@ -4,9 +4,12 @@ import MovieModal from "../containers/MovieModal";
 const Home:FC = () => {
   const [searchedMovie, setSearchedMovie] = useState<string>("");
   const [genres, setGenres] = useState<[]>();
+  const [latestMovies, setLatestMovies] = useState<[]>();
   const [searchResults, setSearchResults] = useState<[]>();
   const apiKey = "1c5abaaeaa13c66b570ad3042a0d51f4";
 
+  //TODO: pages should be included or load on scrolling
+  //TODO: CHECK series also
   useEffect(() => {
     async function genreFetch() {
       const url = "https://api.themoviedb.org/3/genre/movie/list?api_key=" + apiKey;
@@ -17,8 +20,19 @@ const Home:FC = () => {
         setGenres(response.genres);
       }).catch(error => console.log(error));
     }
-
     genreFetch();
+
+    async function latestMoviesFetch() {
+      const url = "https://api.themoviedb.org/3/movie/top_rated?api_key=" + apiKey;
+
+      const response = await fetch(url);
+      const data = response.json();
+      const results = data.then(response => {
+        setLatestMovies(response.results);
+      }).catch(error => console.log(error));
+    }
+    latestMoviesFetch();
+
   },[]);
 
   const handleSearch = (value: string) => {
@@ -26,6 +40,8 @@ const Home:FC = () => {
     
     if (value.length < 3) {
       return;
+    } else if (value.length === 0) {
+      setSearchResults([]);
     }
 
     async function movieFetch() {
@@ -36,6 +52,7 @@ const Home:FC = () => {
       const response = await fetch(query);
       const data = response.json();
       const results = data.then(response => {
+        console.log("searched",response.results);
         setSearchResults(response.results);
       }).catch(error => console.log(error));
     }
@@ -54,15 +71,28 @@ const Home:FC = () => {
     });
     
     return filteredGenres.map((genre: any, index: number) => {
-      return <p key={index}>{genre}</p>;
+      if (index === 0) return <p key={index}>{genre}</p>;
+      return <p key={index}>{", " + genre}</p>;
     });
   }
 
   const handleSearchResults = () => {
-    console.log(searchResults);
     if (!searchResults || searchResults.length === 0) {
       return <div>Nincs találat</div>;
     } return searchResults.map((result: any, index) => {
+      return <MovieModal 
+        title={result.title}
+        description={result.overview}
+        genre={renderGenre(result)}
+        releaseDate={result.release_date}
+        id={result.id}
+        imageUrl={result.poster_path} 
+      />
+    });
+  }
+
+  const renderLatestMovies = () => {
+    return latestMovies?.map((result: any, index) => {
       return <MovieModal 
         title={result.title}
         description={result.overview}
@@ -78,12 +108,17 @@ const Home:FC = () => {
     Home
     <div>
       <p>Search:</p>
-      <input onChange={(e) => handleSearch(e.target.value)} type="search" value={searchedMovie} />
+      <input 
+        onBlur={(e) => handleSearch(e.target.value)}
+        onChange={(e) => handleSearch(e.target.value)} 
+        type="search" value={searchedMovie} />
     </div>
     <div>
       <p>Results</p>
-      <div style={{ display: "flex" }}>
-        {handleSearchResults()}
+      <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}>
+        {searchedMovie.length >= 3 ? 
+        handleSearchResults() : 
+        renderLatestMovies()}
       </div>
     </div>
   </div>;

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import Modal from 'react-modal';
 
 const customStyles = {
@@ -21,6 +21,8 @@ interface IMovieModal {
   imageUrl: string 
 }
 
+const apiKey = "1c5abaaeaa13c66b570ad3042a0d51f4";
+
 const MovieModal:FC<IMovieModal> = ({
   title,
   description,
@@ -29,20 +31,41 @@ const MovieModal:FC<IMovieModal> = ({
   id,
   imageUrl 
 }) => {
-  const [modalIsOpen, setIsOpen] = React.useState(false);
+  const [modalIsOpen, setIsOpen] = useState(false);
+  const [detail, setDetail] = useState();
 
-  function openModal() {
+  useEffect(() => {
+    async function detailFetch() {
+      const url = "https://api.themoviedb.org/3/movie/" + id + "?api_key=" + apiKey;
+
+      const response = await fetch(url);
+      const data = response.json();
+      const results = data.then(response => {
+        setDetail(response);
+      }).catch(error => console.log(error));
+    }
+
+    detailFetch();
+  }, []);
+
+  const openModal = () => {
     setIsOpen(true);
   }
 
-  function closeModal() {
+  const closeModal = () => {
     setIsOpen(false);
   }
+
+
 
   return (
     <div>
       <div style={{ border: "1px solid grey", width: "250px" }} onClick={openModal}>
-          <img src={imageUrl} alt="" />
+          <img 
+            width="200px"
+            height="auto"
+            src={imageUrl && "https://image.tmdb.org/t/p/w300_and_h450_bestv2"+imageUrl} 
+            alt="" />
           <div>{title}</div>
           <div>{releaseDate}</div>
           <div style={{ display: "flex", justifyContent: "center" }}>{genre}</div>
@@ -54,12 +77,12 @@ const MovieModal:FC<IMovieModal> = ({
         contentLabel="Example Modal"
       >
         <div>
-          <img src={imageUrl} alt=""/>
+          <img src={imageUrl && "https://image.tmdb.org/t/p/w300_and_h450_bestv2"+imageUrl} alt=""/>
         </div>
         <div>
           <p>{title}</p>
           <p>{description}</p>
-          <p>{genre}</p>
+          <div>{genre}</div>
           <p>{releaseDate}</p>
           <p>{}</p>
           <p>{}</p> 
