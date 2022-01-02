@@ -1,4 +1,5 @@
 import React, { FC, } from 'react';
+import './ModalContent.css';
 
 interface IMovieModal {
   title: string,
@@ -19,7 +20,6 @@ const ModalContent:FC<IMovieModal> = ({
     runtime,
     countries
   }) => {
-  console.log(countries?.length === 0);
 
   const movieDetail = [
     {
@@ -61,12 +61,12 @@ const ModalContent:FC<IMovieModal> = ({
 
   return (
     <div>
-      <table style={{ paddingRight: "30px" }}>
+      <table className="Details_table-container">
         <tbody>
           {movieDetail.map(detail => (
             <tr>
-              <td style={{ verticalAlign: "top", padding: "0 0 10px" }}>{detail.leftSide}</td>
-              <td style={{ padding: "0 0 10px 5px" }}>{detail.rightSide}</td>
+              <td className="Details_table-left_side">{detail.leftSide}</td>
+              <td className="Details_table-right_side">{detail.rightSide}</td>
             </tr>
           ))}
         </tbody>

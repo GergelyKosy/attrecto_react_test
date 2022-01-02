@@ -1,0 +1,10 @@
+.Details_table-container {
+  padding-right: 30px;
+}
+.Details_table-left_side {
+  vertical-align: top;
+  padding: 0 0 10px;
+}
+.Details_table-right_side {
+  padding: 0 0 10px 5px;
+}

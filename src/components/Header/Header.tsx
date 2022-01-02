@@ -1,7 +1,8 @@
 import { FC } from "react";
+import "./Header.css";
 
 const Header:FC = () => {
-  return <div 
+  return <div className="Header_container"
     style={{ 
       paddingTop: "50px", 
       fontSize: "40px", 

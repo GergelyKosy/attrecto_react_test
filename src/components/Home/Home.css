@@ -1,0 +1,9 @@
+.Home_container {
+  padding-bottom: 100px;
+}
+
+.Results_container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}

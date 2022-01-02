@@ -1,7 +1,9 @@
 import React, { FC, useEffect, useState } from 'react';
 import Modal from 'react-modal';
-import ModalContent from './Modal/ModalContent';
+import ModalContent from '../ModalContent/ModalContent';
 import { BsXSquareFill } from "react-icons/bs";
+import { detailFetch } from '../../../api';
+import './MovieModal.css';
 
 
 const customStyles = {
@@ -40,8 +42,6 @@ interface IDetail {
   production_countries: []
 }
 
-const apiKey = "1c5abaaeaa13c66b570ad3042a0d51f4";
-
 const MovieModal:FC<IMovieModal> = ({
   title,
   description,
@@ -55,17 +55,9 @@ const MovieModal:FC<IMovieModal> = ({
   const [detail, setDetail] = useState<IDetail>();
 
   useEffect(() => {
-    async function detailFetch() {
-      const url = "https://api.themoviedb.org/3/movie/" + id + "?api_key=" + apiKey;
-
-      const response = await fetch(url);
-      const data = response.json();
-      const results = data.then(response => {
-        setDetail(response);
-      }).catch(error => console.log(error));
-    }
-
-    detailFetch();
+    detailFetch(id).then(response => {
+      setDetail(response);
+    }).catch(error => console.log(error));
   }, []);
 
   const openModal = () => {
@@ -78,40 +70,19 @@ const MovieModal:FC<IMovieModal> = ({
 
   return (
     <div key={index}>
-      <div 
-        style={{ 
-          width: "250px",
-          margin: "10px",
-          height: "400px",
-          position: "relative",
-          cursor: "pointer"
-        }}
+      <div
+        className="Movie_preview-container"
         onClick={openModal}>
           <img 
-            style={{
-              width: "inherit",
-              borderTopLeftRadius: "10px",
-              borderTopRightRadius: "10px"
-            }}
+            className="Movie_preview-picture"
             height="auto"
             src={imageUrl && "https://image.tmdb.org/t/p/w300_and_h450_bestv2"+imageUrl} 
             alt="" />
-          <div style={{
-            borderTop: "unset",
-            position: "absolute",
-            bottom: 0,
-            width: "100%",
-            backgroundColor: "black"
-          }}>
+          <div className="Movie_preview-details">
             <div>{title}</div>
             <div>{releaseDate}</div>
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <p style={{
-                margin: "auto",
-                textOverflow: "ellipsis",
-                overflow: "hidden",
-                whiteSpace: "nowrap"
-              }}>{genre}</p>
+            <div className="Movie_preview-genre_container">
+              <p className="Movie_preview-genre_text">{genre}</p>
             </div>  
           </div>
       </div>
@@ -124,7 +95,7 @@ const MovieModal:FC<IMovieModal> = ({
         <div>
           <img src={imageUrl && "https://image.tmdb.org/t/p/w300_and_h450_bestv2"+imageUrl} alt=""/>
         </div>
-        <div style={{ overflowY: "auto", padding: "25px", display: "flex" }}>
+        <div className="Modal_content_container">
           <ModalContent
             title={title}
             description={description}
@@ -134,15 +105,7 @@ const MovieModal:FC<IMovieModal> = ({
             runtime={detail?.runtime}
             countries={detail?.production_countries}
           />
-          <div style={{
-            fontSize: "24px",
-            fontWeight: "700",
-            cursor: "pointer",
-            position: "absolute",
-            top: 0,
-            right: 0,
-            margin: "20px"
-          }} onClick={closeModal}>
+          <div className="Modal_content-close_button" onClick={closeModal}>
             <BsXSquareFill />
           </div>
         </div>

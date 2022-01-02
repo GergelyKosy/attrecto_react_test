@@ -1,7 +1,7 @@
 import {FC, useEffect, useState } from "react";
-import MovieModal from "../containers/MovieModal";
-
-
+import { genreFetch, latestMoviesFetch, movieFetch } from "../../api";
+import MovieModal from "../../containers/Modal/MovieModal/MovieModal";
+import "./Home.css";
 
 const Home:FC = () => {
   const [searchedMovie, setSearchedMovie] = useState<string>("");
@@ -13,43 +13,25 @@ const Home:FC = () => {
   const [pageCounter, setPageCounter] = useState<number>(1);
 
   const [searchResults, setSearchResults] = useState<[]>();
-  const apiKey = "1c5abaaeaa13c66b570ad3042a0d51f4";
 
   // FETCH
-  async function latestMoviesFetch(page: number) {
-    const url = "https://api.themoviedb.org/3/movie/top_rated?api_key=" + apiKey;
-    const searchParam = url + "&page=" + page;
-
-    setPageCounter(page);
-
-    const response = await fetch(searchParam);
-    const data = response.json();
-    const results = data.then(response => {
+  const handleLatestMoviesFetch = (page: number) => {
+    latestMoviesFetch(page).then(response => {
+      setPageCounter(page);
       setLatestMoviesPageCount(response.total_pages);
       setLatestMovies(response.results);
     }).catch(error => console.log(error));
   }
 
-  async function genreFetch() {
-    const url = "https://api.themoviedb.org/3/genre/movie/list?api_key=" + apiKey;
-
-    const response = await fetch(url);
-    const data = response.json();
-    const results = data.then(response => {
+  const handleGenreFetch = () => {
+    genreFetch().then(response => {
       setGenres(response.genres);
     }).catch(error => console.log(error));
   }
 
-  async function movieFetch(page: number, value: string) {
-    const url = "https://api.themoviedb.org/3/search/movie?api_key=" + apiKey;
-    const searchParam = "&query=" + value + "&page=" + page;
-    const query = url + searchParam;
-
-    setPageCounter(page);
-
-    const response = await fetch(query);
-    const data = response.json();
-    const results = data.then(response => {
+  const handleMovieFetch = (pageCounter: number, value: string) => {
+    movieFetch(pageCounter, value).then(response => {
+      setPageCounter(pageCounter);
       setMoviesPageCount(response.total_pages);
       setSearchResults(response.results);
     }).catch(error => console.log(error));
@@ -57,21 +39,23 @@ const Home:FC = () => {
 
   //TODO: pages should be included or load on scrolling
   useEffect(() => {
-    genreFetch();
-    latestMoviesFetch(1);
+    handleGenreFetch();
+    handleLatestMoviesFetch(1);
   },[]);
 
   const handleSearch = (value: string) => {
     setSearchedMovie(value);
     setPageCounter(1);
+
     if (value.length < 3) {
       return;
     } else if (value.length === 0) {
       setSearchResults([]);
     }
 
-    movieFetch(pageCounter, value);
+    handleMovieFetch(pageCounter, value);
   }
+
 
   const renderGenre = (result: any) => {
     const filteredGenres:any = [];
@@ -83,7 +67,6 @@ const Home:FC = () => {
         }
       })
     });
-    
     // eslint-disable-next-line array-callback-return
     filteredGenres.map((genre: any, index: number) => {
       if (index === 0) {
@@ -92,9 +75,9 @@ const Home:FC = () => {
         finalGenres += ", " + genre;
       }
     });
-
     return finalGenres;
   }
+
 
   const handleSearchResults = () => {
     if (!searchResults || searchResults.length === 0) {
@@ -127,20 +110,15 @@ const Home:FC = () => {
   }
 
   const fetchMoreMovies = (movies: string, forward: boolean) => {
-    console.log(pageCounter);
-    console.log(moviesPageCount);
-    console.log(latestMoviesPageCount);
-    console.log(movies);
-    console.log(forward);
     if (movies === "latestMovies") {
-      if (forward) latestMoviesFetch(pageCounter + 1);
+      if (forward) handleLatestMoviesFetch(pageCounter + 1);
       else {
-        latestMoviesFetch(pageCounter - 1);
+        handleLatestMoviesFetch(pageCounter - 1);
       }
     } else {
-      if (forward) movieFetch(pageCounter + 1, searchedMovie);
+      if (forward) handleMovieFetch(pageCounter + 1, searchedMovie);
       else {
-        movieFetch(pageCounter - 1, searchedMovie);
+        handleMovieFetch(pageCounter - 1, searchedMovie);
       }
     }
   }
@@ -166,7 +144,7 @@ const Home:FC = () => {
     </>
   }
 
-  return <div style={{ paddingBottom: "100px" }}>
+  return <div className="Home_container">
     <div>
       <p>Search:</p>
       <input 
@@ -176,7 +154,7 @@ const Home:FC = () => {
     </div>
     <div>
       <p>Results</p>
-      <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}>
+      <div className="Results_container">
         {searchedMovie.length >= 3 ? (
           handleSearchResults()
         ) : (
